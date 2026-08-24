@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="An exploratory map of public green spaces across Leeds." />
+    <title>Common Ground / Leeds</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="css/styles.css" />
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script defer src="js/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#explore">Skip to map</a>
+    <div class="site-shell">
+      <header class="site-header" aria-label="Site header">
+        <a class="wordmark" href="#top" aria-label="Common Ground Leeds home">
+          <span class="wordmark-mark" aria-hidden="true">✳</span>
+          <span>Common Ground</span>
+        </a>
+        <nav class="site-nav" aria-label="Primary navigation">
+          <a href="#explore">Explore</a>
+          <a href="#context">Why it matters</a>
+          <a href="#methods">About the data</a>
+        </nav>
+        <span class="header-note">GEOG5870 / WEB GIS</span>
+      </header>
+
+      <main id="main-content">
+        <section class="hero" id="top" aria-labelledby="page-title">
+          <div class="hero-kicker"><span>01</span><span>Leeds, West Yorkshire</span></div>
+          <h1 id="page-title">A city is more<br /><em>than its streets.</em></h1>
+          <div class="hero-intro">
+            <p class="lede">A field guide to the public green spaces that give Leeds room to breathe.</p>
+            <p class="hero-copy">Explore the pattern of parks, recreation grounds and nature reserves across the city. This is a starting point for asking a simple question: where is common ground, and who can reach it?</p>
+            <a class="text-link" href="#explore">Begin exploring <span aria-hidden="true">↘</span></a>
+          </div>
+          <div class="hero-stamp" aria-hidden="true"><span>MAP<br />THE<br />EVERYDAY</span></div>
+        </section>
+
+        <section class="explore-section" id="explore" aria-labelledby="explore-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">02 / The map</p>
+              <h2 id="explore-title">Find your<br /><em>bit of green.</em></h2>
+            </div>
+            <p class="section-note">Use the map as an index, not an answer. Select a category, search a name, or let the whole pattern come into view.</p>
+          </div>
+
+          <div class="map-layout">
+            <aside class="map-rail" aria-label="Map controls and summary">
+              <div class="control-block">
+                <label class="control-label" for="search-input">Search the map</label>
+                <div class="search-wrap">
+                  <span aria-hidden="true">⌕</span>
+                  <input id="search-input" type="search" placeholder="Try Roundhay…" autocomplete="off" />
+                </div>
+              </div>
+              <div class="control-block">
+                <label class="control-label" for="category-filter">Show me</label>
+                <select id="category-filter">
+                  <option value="all">All green spaces</option>
+                </select>
+              </div>
+              <button class="reset-button" id="reset-view" type="button">Reset the view <span aria-hidden="true">↺</span></button>
+
+              <div class="mode-block">
+                <p class="control-label">Map emphasis</p>
+                <div class="mode-switch" role="group" aria-label="Choose map emphasis">
+                  <button class="mode-button is-active" type="button" data-map-mode="category" aria-pressed="true">Types</button>
+                  <button class="mode-button" type="button" data-map-mode="area" aria-pressed="false">Area</button>
+                </div>
+              </div>
+
+              <div class="stats-block" aria-live="polite">
+                <p class="control-label">The visible picture</p>
+                <div class="stat-line"><strong id="visible-count">—</strong><span>green spaces</span></div>
+                <div class="stat-line"><strong id="category-count">—</strong><span>categories</span></div>
+                <div class="stat-line"><strong id="area-total">—</strong><span>known hectares</span></div>
+              </div>
+
+              <p class="status-line" id="data-status" role="status">Loading the green-space index…</p>
+            </aside>
+
+            <div class="map-stage">
+              <div id="map" class="map" role="application" aria-label="Interactive map of public green spaces in Leeds"></div>
+              <div class="map-key" id="map-key" aria-label="Map legend">
+                <span class="key-swatch" aria-hidden="true"></span>
+                <span id="map-key-label">Public green space</span>
+              </div>
+              <div class="map-error" id="map-error" role="alert" hidden>
+                <strong>The map could not find its data.</strong>
+                <span>Try refreshing the page or check that the site is being served from a local web server.</span>
+              </div>
+              <div class="map-caption"><span>LEEDS / 53.80° N, 1.55° W</span><span>DATA VIEW / <b id="result-label">ALL SPACES</b></span></div>
+            </div>
+          </div>
+
+          <div class="map-insights" aria-label="Green-space data summaries">
+            <div class="insight-panel category-panel">
+              <div class="insight-heading">
+                <div>
+                  <p class="eyebrow">02A / The mix</p>
+                  <h3>What is in<br /><em>the index?</em></h3>
+                </div>
+                <p>Recorded spaces by official typology. Bars show count, not quality or access.</p>
+              </div>
+              <div class="category-chart" id="category-chart" role="list" aria-label="Green spaces by category"></div>
+            </div>
+
+            <div class="insight-panel largest-panel">
+              <div class="insight-heading">
+                <div>
+                  <p class="eyebrow">02B / The scale</p>
+                  <h3>Largest<br /><em>recorded spaces.</em></h3>
+                </div>
+                <p>Choose a place to bring it into focus on the map.</p>
+              </div>
+              <ol class="largest-list" id="largest-list" aria-label="Largest recorded green spaces"></ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="context-section" id="context" aria-labelledby="context-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="eyebrow">03 / The context</p>
+              <h2 id="context-title">Why this<br /><em>matters.</em></h2>
+            </div>
+            <p class="section-note">Green space is not a decorative layer. It is part of the city’s everyday infrastructure: social, ecological and unevenly distributed.</p>
+          </div>
+          <div class="context-grid">
+            <article class="context-card context-card-large">
+              <span class="card-number">01</span>
+              <h3>Shared ground</h3>
+              <p>Parks and open spaces are among the few places in a city that are not organised around spending. Their distribution shapes where people can pause, play, meet and notice seasonal change.</p>
+            </article>
+            <article class="context-card">
+              <span class="card-number">02</span>
+              <h3>Spatial clues</h3>
+              <p>A map makes the pattern visible. It can prompt better questions about density, neighbourhood difference and the relationship between built-up land and open space.</p>
+            </article>
+            <article class="context-card context-card-accent">
+              <span class="card-number">03</span>
+              <h3>A measured start</h3>
+              <p>This prototype shows location and recorded area. It does not measure walking time, quality, safety or who uses each place.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="methods-section" id="methods" aria-labelledby="methods-title">
+          <div class="methods-intro">
+            <p class="eyebrow">04 / Notes</p>
+            <h2 id="methods-title">Read the<br /><em>small print.</em></h2>
+          </div>
+          <div class="methods-copy">
+            <p><strong>What you are seeing.</strong> The map is an exploratory client-side visualisation built with HTML, CSS, JavaScript and Leaflet. The green-space layer is loaded from a local GeoJSON file and can be filtered by name and category.</p>
+            <p><strong>What it cannot tell you.</strong> A mapped location is not the same as an accessible location. The current view does not account for entrances, paths, slope, maintenance, perceived safety or travel time.</p>
+            <p><strong>Next steps.</strong> A fuller study could add population data, street-network travel times, accessibility audits and time-based change. It could also compare provision with local environmental and social indicators.</p>
+            <p class="data-source" id="data-source-note"><strong>Data and map credits.</strong> Public Green Spaces polygon data © Leeds City Council, accessed 24 August 2026 from the council’s <a href="https://mapservices.leeds.gov.uk/arcgis/rest/services/Public/Customer_Contact/MapServer/10">ArcGIS REST service</a>. The service metadata does not state a separate layer licence, so public redistribution should be checked against the council’s <a href="https://www.leeds.gov.uk/opendata/terms-and-licences">open-data terms</a> before deployment. Source attributes were reduced and category codes translated into readable labels; geometry was requested in WGS84. Basemap © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>; interactive mapping by <a href="https://leafletjs.com/">Leaflet</a>.</p>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <span>COMMON GROUND / LEEDS</span>
+        <span>AN EXPLORATORY WEB GIS PROJECT</span>
+        <a href="#top">Back to top ↑</a>
+      </footer>
+    </div>
+  </body>
+</html>

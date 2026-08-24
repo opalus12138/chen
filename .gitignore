@@ -1,0 +1,7 @@
+.DS_Store
+.claude/
+docs/
+submission/
+GEOG5870_Assessment_Brief_FinalProject_translate_.docx
+deploy/
+temp_*.py
