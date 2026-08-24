@@ -3,5 +3,6 @@
 docs/
 submission/
 GEOG5870_Assessment_Brief_FinalProject_translate_.docx
+.~*.docx
 deploy/
 temp_*.py

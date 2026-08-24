@@ -13,6 +13,7 @@
     searchTimer: null,
     mapMode: 'category',
     activeFeature: null,
+    markerLayer: null,
   };
 
   const $ = (selector) => document.querySelector(selector);
@@ -31,6 +32,8 @@
     categoryChart: $('#category-chart'),
     largestList: $('#largest-list'),
     mapKeyLabel: $('#map-key-label'),
+    areaLegend: $('#area-legend'),
+    mapSummary: $('#map-summary'),
     modeButtons: document.querySelectorAll('[data-map-mode]'),
   };
 
@@ -125,11 +128,46 @@
       attribution: '&copy; OpenStreetMap contributors',
     }).addTo(state.map);
     state.geoJsonLayer = L.geoJSON(null, { style: styleFeature, onEachFeature }).addTo(state.map);
+    state.markerLayer = L.layerGroup().addTo(state.map);
   }
 
   function updateMapKey() {
     if (!elements.mapKeyLabel) return;
     elements.mapKeyLabel.textContent = state.mapMode === 'area' ? 'Recorded area · light to dark' : 'Public green space';
+    if (elements.areaLegend) elements.areaLegend.hidden = state.mapMode !== 'area';
+  }
+
+  function updateMapSummary(features) {
+    if (!elements.mapSummary) return;
+    if (!features.length) {
+      elements.mapSummary.textContent = 'Current view: no recorded spaces match the filters';
+      return;
+    }
+    const areas = features.map((feature) => Number(feature.properties?.area_ha)).filter((area) => Number.isFinite(area) && area > 0);
+    const largest = areas.length ? Math.max(...areas) : null;
+    const label = state.selectedCategory === 'all' ? 'all recorded spaces' : `${state.selectedCategory.toLowerCase()} spaces`;
+    elements.mapSummary.textContent = largest ? `Current view: ${features.length.toLocaleString('en-GB')} ${label} · largest ${formatArea(largest)}` : `Current view: ${features.length.toLocaleString('en-GB')} ${label}`;
+  }
+
+  function renderTopMarkers(features) {
+    if (!state.markerLayer) return;
+    state.markerLayer.clearLayers();
+    const largest = features
+      .filter((feature) => Number.isFinite(Number(feature.properties?.area_ha)) && feature.geometry?.type === 'Polygon')
+      .sort((a, b) => Number(b.properties.area_ha) - Number(a.properties.area_ha))
+      .slice(0, 5);
+    largest.forEach((feature, index) => {
+      const layer = L.geoJSON(feature);
+      const center = layer.getBounds().getCenter();
+      const marker = L.marker(center, {
+        icon: L.divIcon({ className: 'top-marker-wrap', html: `<span class="top-marker">${String(index + 1).padStart(2, '0')}</span>`, iconSize: [30, 30], iconAnchor: [15, 15] }),
+        keyboard: true,
+        title: `${feature.properties?.name}, ${formatArea(feature.properties?.area_ha)}`,
+      });
+      marker.bindTooltip(`${escapeHtml(feature.properties?.name)} · ${escapeHtml(formatArea(feature.properties?.area_ha))}`, { direction: 'top', offset: [0, -14] });
+      marker.on('click', () => focusFeatureOnMap(feature.properties?.source_id));
+      state.markerLayer.addLayer(marker);
+    });
   }
 
   function updateMapStyles() {
@@ -150,11 +188,19 @@
     const max = rows[0]?.[1] || 1;
     elements.categoryChart.innerHTML = rows.length ? rows.map(([category, count]) => `
       <div class="category-row" role="listitem" title="${escapeHtml(category)}: ${count} recorded spaces">
-        <span class="category-name">${escapeHtml(category)}</span>
+        <button class="category-name category-button${state.selectedCategory === category ? ' is-selected' : ''}" type="button" data-category="${escapeHtml(category)}" aria-label="Filter map to ${escapeHtml(category)}">${escapeHtml(category)}</button>
         <span class="category-track" aria-hidden="true"><span class="category-bar" style="width: ${(count / max) * 100}%"></span></span>
         <span class="category-value">${count.toLocaleString('en-GB')}</span>
       </div>
     `).join('') : '<p class="largest-empty">No category data for this view.</p>';
+    elements.categoryChart.querySelectorAll('[data-category]').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.selectedCategory = button.dataset.category;
+        elements.categoryFilter.value = state.selectedCategory;
+        applyFilters();
+        elements.categoryChart.querySelectorAll('[data-category]').forEach((item) => item.classList.toggle('is-selected', item === button));
+      });
+    });
   }
 
   function renderLargestList(features) {
@@ -219,6 +265,8 @@
     elements.areaTotal.textContent = knownAreas.length ? totalArea.toLocaleString('en-GB', { maximumFractionDigits: 1 }) : '—';
     renderCategoryChart(features);
     renderLargestList(features);
+    updateMapSummary(features);
+    renderTopMarkers(features);
     if (elements.resultLabel) {
       elements.resultLabel.textContent = state.selectedCategory === 'all' ? 'ALL SPACES' : state.selectedCategory.toUpperCase();
     }
@@ -246,7 +294,7 @@
     const filtered = state.allFeatures.filter((feature) => {
       const properties = feature.properties || {};
       const categoryMatches = state.selectedCategory === 'all' || safeText(properties.category, 'Other') === state.selectedCategory;
-      const nameMatches = !query || safeText(properties.name).toLocaleLowerCase('en-GB').includes(query);
+        const nameMatches = !query || safeText(properties.name).toLocaleLowerCase('en-GB').includes(query);
       return categoryMatches && nameMatches;
     });
     renderFeatures(filtered);

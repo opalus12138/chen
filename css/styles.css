@@ -101,6 +101,17 @@ h2 { margin-bottom: 0; font-size: clamp(3.1rem, 6.2vw, 6.6rem); line-height: .82
 .map { width: 100%; height: 100%; min-height: 625px; filter: saturate(.62) sepia(.09); }
 .map-key { position: absolute; z-index: 500; top: 1.1rem; left: 1.15rem; display: flex; align-items: center; gap: .55rem; padding: .55rem .75rem; background: rgba(251, 250, 246, .88); color: var(--ink); font-family: var(--mono); font-size: .58rem; letter-spacing: .02em; text-transform: uppercase; backdrop-filter: blur(8px); }
 .key-swatch { width: 10px; height: 10px; border: 2px solid var(--paper); border-radius: 50%; background: var(--moss); box-shadow: 0 0 0 1px var(--moss); }
+.area-legend { position: absolute; z-index: 500; top: 3.25rem; left: 1.15rem; display: grid; gap: .4rem; padding: .7rem .8rem; background: rgba(251, 250, 246, .9); color: var(--ink-soft); font-family: var(--mono); font-size: .55rem; line-height: 1.2; backdrop-filter: blur(8px); }
+.legend-label { margin-bottom: .1rem; color: var(--ink); font-weight: 500; text-transform: uppercase; }
+.legend-dot { display: inline-block; width: 8px; height: 8px; margin-right: .35rem; border-radius: 50%; vertical-align: -1px; }
+.legend-dot-small { background: #7da087; }
+.legend-dot-medium { background: #2f5b45; }
+.legend-dot-large { background: #163c2b; }
+.top-marker-note { position: absolute; z-index: 500; right: 1rem; top: 1.1rem; display: flex; align-items: center; gap: .45rem; padding: .55rem .7rem; background: rgba(251, 250, 246, .88); color: var(--ink-soft); font-family: var(--mono); font-size: .55rem; text-transform: uppercase; backdrop-filter: blur(8px); }
+.top-marker-sample { display: grid; width: 1.35rem; height: 1.35rem; place-items: center; border-radius: 50%; background: var(--amber); color: var(--ink); font-size: .5rem; }
+.top-marker-wrap { border: 0; background: transparent; }
+.top-marker { display: grid; width: 28px; height: 28px; place-items: center; border: 2px solid var(--paper); border-radius: 50%; background: var(--amber); box-shadow: 0 2px 8px rgba(24, 37, 31, .28); color: var(--ink); font-family: var(--mono); font-size: .52rem; font-weight: 500; }
+.map-summary { position: absolute; z-index: 500; right: 1rem; bottom: 2.65rem; max-width: 300px; padding: .45rem .65rem; background: rgba(251, 250, 246, .82); color: var(--ink-soft); font-family: var(--mono); font-size: .55rem; line-height: 1.3; backdrop-filter: blur(8px); }
 .map-caption { position: absolute; z-index: 500; right: 1rem; bottom: .75rem; left: 1rem; display: flex; justify-content: space-between; color: var(--ink); font-family: var(--mono); font-size: .56rem; letter-spacing: .04em; pointer-events: none; text-shadow: 0 1px var(--paper); }
 .map-caption b { color: var(--moss-dark); font-weight: 500; }
 .map-error { position: absolute; z-index: 600; top: 50%; left: 50%; display: grid; width: min(350px, calc(100% - 2rem)); gap: .5rem; padding: 1.3rem; border-left: 3px solid var(--amber); background: var(--paper); color: var(--ink); transform: translate(-50%, -50%); box-shadow: 0 1rem 3rem rgba(24, 37, 31, .15); font-size: .75rem; line-height: 1.5; }
@@ -114,6 +125,8 @@ h2 { margin-bottom: 0; font-size: clamp(3.1rem, 6.2vw, 6.6rem); line-height: .82
 .category-chart { display: grid; gap: .75rem; }
 .category-row { display: grid; grid-template-columns: minmax(120px, 1.05fr) minmax(90px, 2fr) 40px; align-items: center; gap: .75rem; font-size: .66rem; }
 .category-name { overflow: hidden; color: var(--ink-soft); text-overflow: ellipsis; white-space: nowrap; }
+.category-button { width: 100%; padding: 0; border: 0; background: transparent; cursor: pointer; font: inherit; text-align: left; transition: color .2s ease; }
+.category-button:hover, .category-button:focus-visible, .category-button.is-selected { color: var(--moss-dark); text-decoration: underline; text-decoration-color: var(--amber); text-underline-offset: 3px; }
 .category-track { height: 8px; background: rgba(47, 91, 69, .12); }
 .category-bar { height: 100%; min-width: 3px; border-radius: 0 4px 4px 0; background: var(--moss); }
 .category-value { color: var(--ink); font-family: var(--mono); font-size: .59rem; text-align: right; }
@@ -188,6 +201,9 @@ h2 { margin-bottom: 0; font-size: clamp(3.1rem, 6.2vw, 6.6rem); line-height: .82
   .hero-stamp { top: 4rem; right: -1.2rem; }
   .map-rail { display: block; }
   .map-stage, .map { min-height: 470px; }
+  .area-legend { top: 3.25rem; left: .7rem; }
+  .top-marker-note { top: 1.1rem; right: .7rem; max-width: 130px; }
+  .map-summary { right: .7rem; bottom: 3.8rem; max-width: 220px; }
   .insight-panel { padding: 1.5rem 1.25rem 1.7rem; }
   .insight-heading { display: block; margin-bottom: 1.6rem; }
   .insight-heading p:last-child { max-width: 260px; margin-top: 1rem; }
