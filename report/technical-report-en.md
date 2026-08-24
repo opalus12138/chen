@@ -2,7 +2,7 @@
 
 **Project URL:** https://opalus12138.github.io/chen/
 **Module:** GEOG5870 Web-Based GIS
-**Word count:** approximately 870 words
+**Word count:** 938 words, including headings and references
 
 ## 1. Problem overview
 
